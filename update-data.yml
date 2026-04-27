@@ -1,0 +1,55 @@
+name: Convertir Excel a items.json
+
+# Se dispara cuando subes un archivo Excel que empiece con "Base_de_datos"
+on:
+  push:
+    paths:
+      - 'Base_de_datos*.xlsx'
+      - 'data/Base_de_datos*.xlsx'
+      - 'update_items.py'
+  workflow_dispatch:  # también permite ejecutarlo manualmente desde la pestaña Actions
+
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # necesario para hacer commit del JSON generado
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pandas openpyxl
+
+      - name: Find Excel file
+        id: find_excel
+        run: |
+          # Busca el archivo Excel en la raíz o en data/
+          EXCEL_FILE=$(find . -maxdepth 2 -name "Base_de_datos*.xlsx" -not -path "./.git/*" | head -n 1)
+          if [ -z "$EXCEL_FILE" ]; then
+            echo "ERROR: no se encontró ningún archivo 'Base_de_datos*.xlsx'"
+            exit 1
+          fi
+          echo "Archivo encontrado: $EXCEL_FILE"
+          echo "excel_path=$EXCEL_FILE" >> $GITHUB_OUTPUT
+
+      - name: Convert Excel to JSON
+        run: python update_items.py --excel "${{ steps.find_excel.outputs.excel_path }}" --output items.json
+
+      - name: Commit and push items.json
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add items.json
+          if git diff --staged --quiet; then
+            echo "No hay cambios en items.json"
+          else
+            git commit -m "🤖 Actualización automática de items.json desde Excel"
+            git push
+          fi
