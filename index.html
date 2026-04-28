@@ -1202,6 +1202,673 @@ footer {
 .export-toast.success { background: var(--ok); color: white; }
 .export-toast.error { background: var(--crit); color: white; }
 .export-toast svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+/* ========== PROJECTS GRID ========== */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px;
+}
+
+.project-card {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+.project-card:hover {
+  border-color: var(--accent-deep);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+.project-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--accent-deep);
+  opacity: 0.6;
+}
+.project-card.has-crit::before { background: var(--crit); opacity: 1; }
+.project-card.has-warn::before { background: var(--warn); opacity: 1; }
+.project-card.all-good::before { background: var(--ok); opacity: 1; }
+
+.project-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 10px;
+}
+.project-card-title {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+.project-card-client {
+  font-size: 11px;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  margin-top: 2px;
+}
+.project-card-status {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.project-card-status.crit { background: var(--crit-bg); color: var(--crit); }
+.project-card-status.warn { background: var(--warn-bg); color: var(--warn); }
+.project-card-status.ok { background: var(--ok-bg); color: var(--ok); }
+
+.project-card-progress { margin: 12px 0; }
+.project-card-progress-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 10px;
+  color: var(--ink-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+.project-card-progress-label strong {
+  font-family: var(--num);
+  font-size: 16px;
+  color: var(--ink);
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0;
+  font-feature-settings: "tnum" 1;
+}
+.project-card-progress-bar {
+  height: 8px;
+  background: var(--bg-elevated);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.project-card-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-deep), var(--accent));
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.project-card-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.project-card-stat { text-align: center; }
+.project-card-stat-value {
+  font-family: var(--num);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1;
+  font-feature-settings: "tnum" 1;
+}
+.project-card-stat-value.crit { color: var(--crit); }
+.project-card-stat-value.warn { color: var(--warn); }
+.project-card-stat-value.ok { color: var(--ok); }
+.project-card-stat-label {
+  font-size: 9px;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.project-card-deadline {
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--ink-soft);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.project-card-deadline.urgent { color: var(--crit); font-weight: 600; }
+.project-card-deadline svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+/* ========== PROJECT MODAL ========== */
+.project-modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(10, 10, 10, 0.6);
+  z-index: 9998;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.2s ease-out;
+}
+.project-modal-overlay.visible { display: flex; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.project-modal {
+  background: var(--bg-card);
+  border-radius: 16px;
+  max-width: 1000px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: modalIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--line);
+}
+@keyframes modalIn { from { opacity: 0; transform: scale(0.96) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+.project-modal-header {
+  position: sticky;
+  top: 0;
+  background: var(--bg-card);
+  padding: 24px 28px 18px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  z-index: 1;
+}
+.project-modal-title {
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+.project-modal-subtitle {
+  font-size: 13px;
+  color: var(--ink-muted);
+  margin-top: 4px;
+}
+.project-modal-close {
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-soft);
+  font-size: 18px;
+  font-weight: 700;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.project-modal-close:hover { background: var(--crit); color: white; border-color: var(--crit); }
+
+.project-modal-content { padding: 24px 28px; }
+.project-modal-section { margin-bottom: 22px; }
+.project-modal-section h4 {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-muted);
+  font-weight: 700;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.project-modal-section h4::before {
+  content: '';
+  width: 4px; height: 4px;
+  background: var(--accent-deep);
+  border-radius: 50%;
+}
+
+.modal-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+}
+.modal-kpi {
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+.modal-kpi.crit { border-left: 3px solid var(--crit); }
+.modal-kpi.warn { border-left: 3px solid var(--warn); }
+.modal-kpi.ok { border-left: 3px solid var(--ok); }
+.modal-kpi-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.modal-kpi-value {
+  font-family: var(--num);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1;
+  font-feature-settings: "tnum" 1;
+}
+.modal-kpi-value.crit { color: var(--crit); }
+.modal-kpi-value.warn { color: var(--warn); }
+.modal-kpi-value.ok { color: var(--ok); }
+.modal-kpi-sub {
+  font-size: 10px;
+  color: var(--ink-muted);
+  margin-top: 3px;
+}
+
+.modal-distribution {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.modal-dist-row {
+  display: grid;
+  grid-template-columns: 130px 1fr 50px;
+  gap: 10px;
+  align-items: center;
+  font-size: 12px;
+}
+.modal-dist-label {
+  color: var(--ink-soft);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.modal-dist-bar-track {
+  height: 14px;
+  background: var(--bg-elevated);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.modal-dist-bar-fill {
+  height: 100%;
+  background: var(--accent-deep);
+  border-radius: 4px;
+}
+.modal-dist-value {
+  font-family: var(--num);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--ink);
+  text-align: right;
+  font-feature-settings: "tnum" 1;
+}
+
+/* ========== SEGMENTED CONTROL & TASAS ========== */
+.tasas-controls {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: center;
+}
+.tasas-control-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.tasas-control-group.hidden { display: none !important; }
+.tasas-control-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+  font-weight: 700;
+}
+.segmented-control {
+  display: inline-flex;
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+}
+.seg-btn {
+  background: transparent;
+  border: none;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.15s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.seg-btn:hover { color: var(--ink); }
+.seg-btn.active {
+  background: var(--bg-card);
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
+}
+[data-theme="dark"] .seg-btn.active { background: var(--accent-soft); color: var(--accent-deep); }
+
+.tasas-date-input {
+  border: 1px solid var(--line-strong);
+  background: var(--bg-elevated);
+  padding: 6px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--ink);
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+.tasas-date-input:focus {
+  outline: none;
+  border-color: var(--accent-deep);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.tasa-chart-card {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 22px;
+  margin-bottom: 14px;
+}
+.tasa-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  gap: 16px;
+}
+.tasa-chart-title {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.tasa-chart-subtitle {
+  font-size: 11px;
+  color: var(--ink-muted);
+  margin-top: 2px;
+}
+.tasa-chart-stats {
+  display: flex;
+  gap: 20px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.tasa-chart-stat-value {
+  font-family: var(--num);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1;
+}
+.tasa-chart-stat-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.tasa-chart-svg-wrap {
+  position: relative;
+  width: 100%;
+  overflow-x: auto;
+}
+.tasa-chart-svg {
+  width: 100%;
+  display: block;
+  min-width: 600px;
+}
+.tasa-bar { fill: var(--accent-deep); transition: fill 0.15s; cursor: help; }
+.tasa-bar:hover { fill: var(--accent); }
+.tasa-bar-label { font-size: 9px; fill: var(--ink-muted); text-anchor: middle; font-weight: 500; }
+.tasa-bar-value { font-size: 10px; fill: var(--ink); text-anchor: middle; font-weight: 700; font-family: var(--num); }
+.tasa-axis-line { stroke: var(--line); stroke-width: 1; }
+.tasa-axis-label { font-size: 9px; fill: var(--ink-muted); text-anchor: end; font-weight: 500; }
+
+/* Aliases plural usados por renderTasas() */
+.tasas-chart-card {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-bottom: 14px;
+}
+.tasas-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.tasas-chart-title {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.tasas-chart-stats {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: var(--ink-muted);
+}
+.tasas-chart-stat {
+  white-space: nowrap;
+}
+.tasas-chart-stat strong {
+  color: var(--ink);
+  font-family: var(--num);
+  font-weight: 700;
+  font-size: 13px;
+  font-feature-settings: "tnum" 1;
+}
+.tasas-chart-svg {
+  width: 100%;
+  display: block;
+  min-width: 600px;
+  height: auto;
+}
+.tasas-empty {
+  text-align: center;
+  padding: 24px 10px;
+  color: var(--ink-muted);
+  font-style: italic;
+  font-family: var(--serif);
+  font-size: 14px;
+}
+
+/* ========== COMPARATIVOS DE PROYECTOS ========== */
+.proj-bar-row {
+  display: grid;
+  grid-template-columns: 110px 1fr 70px;
+  gap: 10px;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 12px;
+  border-bottom: 1px dashed var(--line);
+}
+.proj-bar-row:last-child { border-bottom: none; }
+.proj-bar-label {
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 12px;
+}
+.proj-bar-track {
+  background: var(--bg-elevated);
+  height: 18px;
+  border-radius: 3px;
+  position: relative;
+  overflow: hidden;
+}
+.proj-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  padding-left: 6px;
+  font-size: 10px;
+  color: white;
+  font-weight: 700;
+  font-family: var(--num);
+  transition: width 0.4s;
+  white-space: nowrap;
+}
+.proj-bar-value {
+  font-family: var(--num);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--ink);
+  text-align: right;
+  font-feature-settings: "tnum" 1;
+}
+
+/* ========== EDITABLE COMBOBOX ========== */
+.combo-wrap {
+  position: relative;
+  width: 100%;
+  min-width: 130px;
+}
+.combo-input {
+  border: 1px solid var(--line-strong);
+  background: var(--bg-card);
+  padding: 7px 28px 7px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--ink);
+  border-radius: 7px;
+  cursor: text;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a8a8a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 9px center;
+  width: 100%;
+}
+.combo-input:hover {
+  border-color: var(--accent);
+  background-color: var(--bg-elevated);
+}
+.combo-input:focus {
+  outline: none;
+  border-color: var(--accent-deep);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  transform: translateY(-1px);
+}
+.combo-input.has-value {
+  border-color: var(--accent-deep);
+  background-color: var(--accent-soft);
+  color: var(--accent-deep);
+  font-weight: 600;
+}
+[data-theme="dark"] .combo-input.has-value {
+  background-color: rgba(155, 139, 230, 0.15);
+  color: var(--accent);
+}
+
+.combo-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
+  max-height: 240px;
+  overflow-y: auto;
+  z-index: 200;
+  display: none;
+}
+.combo-dropdown.visible { display: block; animation: dropIn 0.15s ease-out; }
+@keyframes dropIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+.combo-option {
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.1s;
+  border-bottom: 1px solid var(--line);
+}
+.combo-option:last-child { border-bottom: none; }
+.combo-option:hover, .combo-option.highlighted {
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+  font-weight: 600;
+}
+[data-theme="dark"] .combo-option:hover, [data-theme="dark"] .combo-option.highlighted {
+  background: rgba(155, 139, 230, 0.15);
+  color: var(--accent);
+}
+.combo-option-all {
+  font-style: italic;
+  color: var(--ink-muted);
+}
+.combo-option-empty {
+  padding: 12px;
+  font-size: 12px;
+  color: var(--ink-muted);
+  text-align: center;
+  font-style: italic;
+}
+.combo-option mark {
+  background: var(--warn-bg);
+  color: var(--warn);
+  padding: 0 2px;
+  border-radius: 2px;
+  font-weight: 700;
+}
+.combo-clear {
+  position: absolute;
+  right: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--ink-muted);
+  color: white;
+  border: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 11px;
+  line-height: 1;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  padding: 0;
+}
+.combo-clear:hover { background: var(--crit); }
+.combo-wrap.has-value .combo-clear { display: flex; }
+
 </style>
 </head>
 <body>
@@ -1243,11 +1910,19 @@ footer {
       <div class="filter-block-content">
         <div class="filter-group">
           <label><svg class="filter-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Cliente</label>
-          <select id="filter-cliente"><option value="">Todos</option></select>
+          <div class="combo-wrap" data-combo="cliente">
+            <input class="combo-input" type="text" placeholder="Todos · escribe para buscar" id="filter-cliente" autocomplete="off">
+            <button class="combo-clear" type="button" tabindex="-1" title="Limpiar">×</button>
+            <div class="combo-dropdown"></div>
+          </div>
         </div>
         <div class="filter-group">
           <label><svg class="filter-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Proyecto</label>
-          <select id="filter-proyecto"><option value="">Todos</option></select>
+          <div class="combo-wrap" data-combo="proyecto">
+            <input class="combo-input" type="text" placeholder="Todos · escribe para buscar" id="filter-proyecto" autocomplete="off">
+            <button class="combo-clear" type="button" tabindex="-1" title="Limpiar">×</button>
+            <div class="combo-dropdown"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -1258,11 +1933,19 @@ footer {
       <div class="filter-block-content">
         <div class="filter-group">
           <label><svg class="filter-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>Género</label>
-          <select id="filter-genero"><option value="">Todos</option></select>
+          <div class="combo-wrap" data-combo="genero">
+            <input class="combo-input" type="text" placeholder="Todos · escribe para buscar" id="filter-genero" autocomplete="off">
+            <button class="combo-clear" type="button" tabindex="-1" title="Limpiar">×</button>
+            <div class="combo-dropdown"></div>
+          </div>
         </div>
         <div class="filter-group">
           <label><svg class="filter-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Categoría</label>
-          <select id="filter-categoria"><option value="">Todas</option></select>
+          <div class="combo-wrap" data-combo="categoria">
+            <input class="combo-input" type="text" placeholder="Todas · escribe para buscar" id="filter-categoria" autocomplete="off">
+            <button class="combo-clear" type="button" tabindex="-1" title="Limpiar">×</button>
+            <div class="combo-dropdown"></div>
+          </div>
         </div>
         <div class="filter-group">
           <label><svg class="filter-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Estado</label>
@@ -1330,6 +2013,8 @@ footer {
 
 <nav class="tabs">
   <button class="tab active" data-tab="ejecutiva">Vista Ejecutiva</button>
+  <button class="tab" data-tab="proyectos">Análisis por Proyecto</button>
+  <button class="tab" data-tab="tasas">Tasas por Proceso</button>
   <button class="tab" data-tab="ontime">On-Time / Cumplimiento</button>
   <button class="tab" data-tab="alertas">Alertas y Riesgo</button>
   <button class="tab" data-tab="colecciones">Avance por Colección</button>
@@ -1378,6 +2063,118 @@ footer {
   <div class="chart-card">
     <div id="pipeline-chart"></div>
   </div>
+</section>
+
+<!-- ========== ANÁLISIS POR PROYECTO ========== -->
+<section id="tab-proyectos" class="tab-content hidden">
+  <div class="section-title-wrap">
+    <div>
+      <h2 class="section-title">Análisis por <em>proyecto</em></h2>
+      <div class="section-sub">Tarjetas con KPIs por proyecto · Click en una tarjeta para ver el detalle expandido</div>
+    </div>
+    <div class="export-bar">
+      <button class="export-btn excel" onclick="exportExcel()" title="Descargar Excel con los datos filtrados">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Excel
+      </button>
+      <button class="export-btn pdf" onclick="exportPDF()" title="Descargar PDF con la vista actual">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        PDF
+      </button>
+    </div>
+  </div>
+
+  <div id="projects-cards-grid" class="projects-grid"></div>
+
+  <h3 class="section-title" style="font-size: 18px; margin-top: 36px;">Comparativos entre <em>proyectos</em></h3>
+  <div class="section-sub">Rankings y comparativas cruzadas para identificar los proyectos con mejor y peor desempeño</div>
+
+  <div class="row-2" id="projects-comparisons">
+    <div class="chart-card">
+      <div class="chart-header">
+        <div class="chart-title">% Cumplimiento por proyecto</div>
+        <div class="chart-subtitle">Entregas a cliente completadas / Total ítems</div>
+      </div>
+      <div id="proj-cumpl-chart"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header">
+        <div class="chart-title">Vencidos por proyecto</div>
+        <div class="chart-subtitle">Total de ítems con fechas vencidas (aprobación + corte + cliente)</div>
+      </div>
+      <div id="proj-vencidos-chart"></div>
+    </div>
+  </div>
+  <div class="row-2" style="margin-top: 14px;">
+    <div class="chart-card">
+      <div class="chart-header">
+        <div class="chart-title">% Avance global por proyecto</div>
+        <div class="chart-subtitle">Promedio de etapas completadas (entrega cliente)</div>
+      </div>
+      <div id="proj-avance-chart"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header">
+        <div class="chart-title">Volumen de ítems por proyecto</div>
+        <div class="chart-subtitle">Total de ítems en el proyecto</div>
+      </div>
+      <div id="proj-volumen-chart"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== TASAS POR PROCESO ========== -->
+<section id="tab-tasas" class="tab-content hidden">
+  <div class="section-title-wrap">
+    <div>
+      <h2 class="section-title">Tasas por <em>proceso</em></h2>
+      <div class="section-sub">Evolución temporal de los hitos clave · Cuántos ítems se completaron en cada período</div>
+    </div>
+    <div class="export-bar">
+      <button class="export-btn excel" onclick="exportExcel()" title="Descargar Excel con los datos filtrados">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Excel
+      </button>
+      <button class="export-btn pdf" onclick="exportPDF()" title="Descargar PDF con la vista actual">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        PDF
+      </button>
+    </div>
+  </div>
+
+  <div class="tasas-controls">
+    <div class="tasas-control-group">
+      <span class="tasas-control-label">Período</span>
+      <div class="segmented-control">
+        <button class="seg-btn" data-tasas-period="day">Día</button>
+        <button class="seg-btn active" data-tasas-period="week">Semana</button>
+        <button class="seg-btn" data-tasas-period="month">Mes</button>
+      </div>
+    </div>
+    <div class="tasas-control-group">
+      <span class="tasas-control-label">Métrica</span>
+      <div class="segmented-control">
+        <button class="seg-btn active" data-tasas-metric="items">Ítems</button>
+        <button class="seg-btn" data-tasas-metric="units">Unidades</button>
+      </div>
+    </div>
+    <div class="tasas-control-group">
+      <span class="tasas-control-label">Rango</span>
+      <div class="segmented-control">
+        <button class="seg-btn active" data-tasas-range="default">Últimas 12 sem.</button>
+        <button class="seg-btn" data-tasas-range="custom">Personalizado</button>
+        <button class="seg-btn" data-tasas-range="all">Todo</button>
+      </div>
+    </div>
+    <div class="tasas-control-group tasas-custom-range hidden">
+      <span class="tasas-control-label">Desde</span>
+      <input type="date" id="tasas-date-from" class="tasas-date-input">
+      <span class="tasas-control-label">Hasta</span>
+      <input type="date" id="tasas-date-to" class="tasas-date-input">
+    </div>
+  </div>
+
+  <div id="tasas-charts"></div>
 </section>
 
 <!-- ========== ON-TIME ========== -->
@@ -1608,6 +2405,7 @@ async function loadData() {
     document.getElementById('dashboard-content').classList.remove('hidden');
 
     populateFilters();
+    postLoadInit();
     render();
   } catch (e) {
     document.getElementById('loader-init').innerHTML = `
@@ -1673,6 +2471,13 @@ function sumUnidades(arr) {
   }, 0);
 }
 
+function escapeHtml(s) {
+  if (s == null) return '';
+  return String(s).replace(/[&<>"']/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[ch]));
+}
+
 // Filtros derivados (tests)
 function isVencidoAprob(it) {
   if (it.estado !== 'ACTIVO') return false;
@@ -1733,25 +2538,223 @@ function applyFilters() {
 }
 
 function populateFilters() {
-  const fields = [
-    ['cliente', 'filter-cliente'],
-    ['proyecto', 'filter-proyecto'],
-    ['genero', 'filter-genero'],
-    ['categoria', 'filter-categoria'],
-  ];
-  fields.forEach(([field, id]) => {
-    const sel = document.getElementById(id);
-    sel.innerHTML = sel.querySelector('option').outerHTML;
-    const vals = [...new Set(ITEMS.map(i => i[field]).filter(v => v))].sort();
-    vals.forEach(v => {
-      const opt = document.createElement('option');
-      opt.value = v; opt.textContent = v;
-      sel.appendChild(opt);
-    });
+  // Setup de los comboboxes editables (cliente, proyecto, género, categoría)
+  setupCombobox('cliente', () => [...new Set(ITEMS.map(i => i.cliente).filter(v => v))].sort());
+  setupCombobox('proyecto', () => {
+    let pool = ITEMS;
+    if (STATE.cliente) pool = pool.filter(i => i.cliente === STATE.cliente);
+    return [...new Set(pool.map(i => i.proyecto).filter(v => v))].sort();
   });
+  setupCombobox('genero', () => [...new Set(ITEMS.map(i => i.genero).filter(v => v))].sort());
+  setupCombobox('categoria', () => [...new Set(ITEMS.map(i => i.categoria).filter(v => v))].sort());
 
   // Poblar las opciones de los 4 filtros de estado por etapa con conteos
   updateStageFilterCounts();
+}
+
+// ==== COMBOBOX EDITABLE ====
+const COMBO_STATE = {}; // por field: { highlightIdx }
+
+function setupCombobox(field, getOptionsFn) {
+  const wrap = document.querySelector(`.combo-wrap[data-combo="${field}"]`);
+  if (!wrap) return;
+  const input = wrap.querySelector('.combo-input');
+  const dropdown = wrap.querySelector('.combo-dropdown');
+  const clearBtn = wrap.querySelector('.combo-clear');
+
+  COMBO_STATE[field] = { highlightIdx: -1 };
+
+  function renderOptions(query = '') {
+    const allOptions = getOptionsFn();
+    const q = query.trim().toLowerCase();
+    const filtered = q
+      ? allOptions.filter(o => String(o).toLowerCase().includes(q))
+      : allOptions;
+
+    let html = '';
+    if (!q && STATE[field]) {
+      // Mostrar opción "Todos" cuando hay un valor activo
+      html += `<div class="combo-option combo-option-all" data-value="">— Todos —</div>`;
+    }
+
+    if (filtered.length === 0) {
+      html += `<div class="combo-option-empty">No hay coincidencias</div>`;
+    } else {
+      html += filtered.map(opt => {
+        const optStr = String(opt);
+        let display = optStr;
+        if (q) {
+          // Resaltar la coincidencia
+          const idx = optStr.toLowerCase().indexOf(q);
+          if (idx >= 0) {
+            display = optStr.substring(0, idx) +
+                      '<mark>' + optStr.substring(idx, idx + q.length) + '</mark>' +
+                      optStr.substring(idx + q.length);
+          }
+        }
+        return `<div class="combo-option" data-value="${escapeAttr(optStr)}">${display}</div>`;
+      }).join('');
+    }
+    dropdown.innerHTML = html;
+    COMBO_STATE[field].highlightIdx = -1;
+  }
+
+  function escapeAttr(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+  }
+
+  function showDropdown() {
+    renderOptions(input.value);
+    dropdown.classList.add('visible');
+  }
+  function hideDropdown() {
+    dropdown.classList.remove('visible');
+  }
+
+  function commitValue(val) {
+    STATE[field] = val;
+    input.value = val;
+    if (val) {
+      wrap.classList.add('has-value');
+      input.classList.add('has-value');
+    } else {
+      wrap.classList.remove('has-value');
+      input.classList.remove('has-value');
+    }
+    hideDropdown();
+    if (field === 'cliente') {
+      // Reset proyecto si ya no aplica
+      const newProjOptions = (() => {
+        let pool = ITEMS;
+        if (val) pool = pool.filter(i => i.cliente === val);
+        return [...new Set(pool.map(i => i.proyecto).filter(v => v))];
+      })();
+      if (STATE.proyecto && !newProjOptions.includes(STATE.proyecto)) {
+        STATE.proyecto = '';
+        const projInput = document.getElementById('filter-proyecto');
+        if (projInput) {
+          projInput.value = '';
+          projInput.classList.remove('has-value');
+          projInput.closest('.combo-wrap').classList.remove('has-value');
+        }
+      }
+    }
+    render();
+  }
+
+  input.addEventListener('focus', showDropdown);
+  input.addEventListener('click', showDropdown);
+
+  input.addEventListener('input', e => {
+    const q = e.target.value.trim();
+    renderOptions(q);
+    dropdown.classList.add('visible');
+    // Si la entrada coincide exactamente con una opción, la auto-seleccionamos
+    const allOptions = getOptionsFn();
+    const exactMatch = allOptions.find(o => String(o).toLowerCase() === q.toLowerCase());
+    if (exactMatch && q !== '') {
+      // Solo aplicamos si difiere del state actual
+      if (STATE[field] !== exactMatch) {
+        STATE[field] = exactMatch;
+        if (field === 'cliente') {
+          const newProjOptions = [...new Set(ITEMS.filter(i => i.cliente === exactMatch).map(i => i.proyecto).filter(v => v))];
+          if (STATE.proyecto && !newProjOptions.includes(STATE.proyecto)) {
+            STATE.proyecto = '';
+            const projInput = document.getElementById('filter-proyecto');
+            if (projInput) {
+              projInput.value = '';
+              projInput.classList.remove('has-value');
+              projInput.closest('.combo-wrap').classList.remove('has-value');
+            }
+          }
+        }
+        render();
+      }
+    } else if (q === '') {
+      // Se borró el contenido → limpiar filtro
+      if (STATE[field]) {
+        STATE[field] = '';
+        if (field === 'cliente') {
+          STATE.proyecto = '';
+          const projInput = document.getElementById('filter-proyecto');
+          if (projInput) {
+            projInput.value = '';
+            projInput.classList.remove('has-value');
+            projInput.closest('.combo-wrap').classList.remove('has-value');
+          }
+        }
+        render();
+      }
+    }
+    // has-value visual
+    if (q) {
+      input.classList.add('has-value');
+      wrap.classList.add('has-value');
+    } else {
+      input.classList.remove('has-value');
+      wrap.classList.remove('has-value');
+    }
+  });
+
+  input.addEventListener('keydown', e => {
+    const opts = dropdown.querySelectorAll('.combo-option:not(.combo-option-empty)');
+    const st = COMBO_STATE[field];
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (!dropdown.classList.contains('visible')) showDropdown();
+      st.highlightIdx = Math.min(st.highlightIdx + 1, opts.length - 1);
+      opts.forEach((o, i) => o.classList.toggle('highlighted', i === st.highlightIdx));
+      const target = opts[st.highlightIdx];
+      if (target) target.scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      st.highlightIdx = Math.max(st.highlightIdx - 1, 0);
+      opts.forEach((o, i) => o.classList.toggle('highlighted', i === st.highlightIdx));
+      const target = opts[st.highlightIdx];
+      if (target) target.scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (st.highlightIdx >= 0 && opts[st.highlightIdx]) {
+        commitValue(opts[st.highlightIdx].dataset.value);
+      } else if (opts.length === 1) {
+        commitValue(opts[0].dataset.value);
+      }
+    } else if (e.key === 'Escape') {
+      hideDropdown();
+      input.blur();
+    }
+  });
+
+  dropdown.addEventListener('click', e => {
+    const opt = e.target.closest('.combo-option');
+    if (!opt) return;
+    commitValue(opt.dataset.value);
+  });
+
+  clearBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    commitValue('');
+    input.focus();
+  });
+
+  // Cerrar al hacer click fuera
+  document.addEventListener('click', e => {
+    if (!wrap.contains(e.target)) hideDropdown();
+  });
+}
+
+function syncComboboxValue(field, value) {
+  const wrap = document.querySelector(`.combo-wrap[data-combo="${field}"]`);
+  if (!wrap) return;
+  const input = wrap.querySelector('.combo-input');
+  if (input) input.value = value || '';
+  if (value) {
+    wrap.classList.add('has-value');
+    input.classList.add('has-value');
+  } else {
+    wrap.classList.remove('has-value');
+    input.classList.remove('has-value');
+  }
 }
 
 function updateStageFilterCounts() {
@@ -1801,14 +2804,10 @@ function updateStageFilterCounts() {
   });
 }
 
-// Listeners de los filtros estándar
-['filter-cliente','filter-proyecto','filter-genero','filter-categoria','filter-estado'].forEach(id => {
-  document.getElementById(id).addEventListener('change', e => {
-    const key = id.replace('filter-','');
-    STATE[key] = e.target.value;
-    if (key === 'cliente') updateProyectoOptions();
-    render();
-  });
+// Listener para el filter-estado (este sí es un select simple)
+document.getElementById('filter-estado').addEventListener('change', e => {
+  STATE.estado = e.target.value;
+  render();
 });
 
 // Listeners de los 4 filtros de estado por etapa
@@ -1830,42 +2829,25 @@ document.getElementById('filter-item').addEventListener('input', e => {
   render();
 });
 
-function updateProyectoOptions() {
-  const sel = document.getElementById('filter-proyecto');
-  const current = STATE.proyecto;
-  sel.innerHTML = '<option value="">Todos</option>';
-  let pool = ITEMS;
-  if (STATE.cliente) pool = pool.filter(i => i.cliente === STATE.cliente);
-  const vals = [...new Set(pool.map(i => i.proyecto).filter(v => v))].sort();
-  vals.forEach(v => {
-    const opt = document.createElement('option');
-    opt.value = v; opt.textContent = v;
-    if (v === current) opt.selected = true;
-    sel.appendChild(opt);
-  });
-  if (!vals.includes(current)) STATE.proyecto = '';
-}
-
 function resetFilters() {
   Object.keys(STATE).forEach(k => {
     if (k === 'sortCol' || k === 'sortDir') return;
     STATE[k] = '';
   });
-  ['filter-cliente','filter-proyecto','filter-genero','filter-categoria','filter-estado',
-   'filter-est-aprob','filter-est-corte','filter-est-qa','filter-est-cliente'].forEach(id => {
+  // Limpiar comboboxes (cliente, proyecto, género, categoría)
+  ['cliente','proyecto','genero','categoria'].forEach(field => syncComboboxValue(field, ''));
+  // Limpiar selects normales y filter-item
+  ['filter-estado','filter-est-aprob','filter-est-corte','filter-est-qa','filter-est-cliente','filter-item'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
-  document.getElementById('filter-item').value = '';
-  updateProyectoOptions();
   render();
 }
 
-// Marcar inputs/selects con clase has-value cuando tienen valor seleccionado
+// Marcar inputs/selects con clase has-value cuando tienen valor seleccionado.
+// Para los comboboxes esto ya lo maneja setupCombobox() — aquí solo manejamos los selects normales.
 function updateHasValueClasses() {
   const map = {
-    'filter-cliente': 'cliente', 'filter-proyecto': 'proyecto',
-    'filter-genero': 'genero', 'filter-categoria': 'categoria',
     'filter-estado': 'estado', 'filter-item': 'item',
     'filter-est-aprob': 'est_aprob', 'filter-est-corte': 'est_corte',
     'filter-est-qa': 'est_qa', 'filter-est-cliente': 'est_cliente',
@@ -1886,7 +2868,6 @@ function renderActiveChips() {
     if (key === 'sortCol' || key === 'sortDir') return;
     if (!val) return;
     let displayVal = val;
-    // Para los filtros de estado por etapa, mostrar de forma amigable
     if (['est_aprob','est_corte','est_qa','est_cliente'].includes(key)) {
       displayVal = val === 'OK' ? 'OK' : 'Pendiente';
     } else if (key === 'estado') {
@@ -1904,7 +2885,7 @@ function renderActiveChips() {
   row.innerHTML = chips.map(c => `
     <span class="active-chip" data-key="${c.key}">
       <span class="active-chip-label">${c.label}</span>
-      <span class="active-chip-value">${c.value}</span>
+      <span class="active-chip-value">${escapeHtml(c.value)}</span>
       <button class="active-chip-close" data-key="${c.key}" title="Quitar filtro">×</button>
     </span>
   `).join('') + `<button class="active-chip-clear-all" onclick="resetFilters()">Limpiar todo</button>`;
@@ -1916,16 +2897,22 @@ function renderActiveChips() {
       const key = btn.dataset.key;
       STATE[key] = '';
       // Sync el control correspondiente
-      const idMap = {
-        cliente: 'filter-cliente', proyecto: 'filter-proyecto',
-        genero: 'filter-genero', categoria: 'filter-categoria',
-        estado: 'filter-estado', item: 'filter-item',
-        est_aprob: 'filter-est-aprob', est_corte: 'filter-est-corte',
-        est_qa: 'filter-est-qa', est_cliente: 'filter-est-cliente',
-      };
-      const el = document.getElementById(idMap[key]);
-      if (el) el.value = '';
-      if (key === 'cliente') updateProyectoOptions();
+      if (['cliente','proyecto','genero','categoria'].includes(key)) {
+        syncComboboxValue(key, '');
+        // Si limpiamos cliente, limpiar también proyecto
+        if (key === 'cliente' && STATE.proyecto) {
+          STATE.proyecto = '';
+          syncComboboxValue('proyecto', '');
+        }
+      } else {
+        const idMap = {
+          estado: 'filter-estado', item: 'filter-item',
+          est_aprob: 'filter-est-aprob', est_corte: 'filter-est-corte',
+          est_qa: 'filter-est-qa', est_cliente: 'filter-est-cliente',
+        };
+        const el = document.getElementById(idMap[key]);
+        if (el) el.value = '';
+      }
       render();
     });
   });
@@ -2930,6 +3917,84 @@ function exportExcel() {
     wsAlerts['!cols'] = [{wch: 16}, {wch: 10}, {wch: 14}, {wch: 14}, {wch: 18}, {wch: 16}, {wch: 10}, {wch: 22}, {wch: 14}];
     XLSX.utils.book_append_sheet(wb, wsAlerts, 'Alertas');
 
+    // ---- Hoja 6: Tasas por proceso ----
+    const periodLbl = TASAS_STATE.period === 'day' ? 'día' : TASAS_STATE.period === 'week' ? 'semana' : 'mes';
+    const tasasRows = [
+      ['TASAS POR PROCESO'],
+      [`Período: ${periodLbl} · Métrica: ${TASAS_STATE.metric === 'items' ? 'ítems' : 'unidades'}`],
+      [],
+      ['Hito', 'Período', 'Ítems', 'Unidades'],
+    ];
+    let rangeFrom3, rangeTo3;
+    if (TASAS_STATE.range === 'all') { rangeFrom3 = null; rangeTo3 = null; }
+    else if (TASAS_STATE.range === 'custom') {
+      rangeFrom3 = TASAS_STATE.customFrom ? parseDate(TASAS_STATE.customFrom) : null;
+      rangeTo3 = TASAS_STATE.customTo ? parseDate(TASAS_STATE.customTo) : null;
+    } else {
+      const r = getDefaultRangeForPeriod();
+      rangeFrom3 = r.from; rangeTo3 = r.to;
+    }
+    TASAS_HITOS.forEach(hito => {
+      const buckets = {};
+      data.forEach(it => {
+        const dateStr = it[hito.key];
+        if (!dateStr) return;
+        const d = parseDate(dateStr);
+        if (!d) return;
+        if (rangeFrom3 && d < rangeFrom3) return;
+        if (rangeTo3 && d > rangeTo3) return;
+        const bk = getBucketKey(dateStr, TASAS_STATE.period);
+        if (!buckets[bk]) buckets[bk] = { items: 0, units: 0 };
+        buckets[bk].items += 1;
+        buckets[bk].units += (typeof it.unidades === 'number' ? it.unidades : 0);
+      });
+      Object.keys(buckets).sort().forEach(k => {
+        tasasRows.push([hito.label, k, buckets[k].items, buckets[k].units]);
+      });
+    });
+    const wsTasas = XLSX.utils.aoa_to_sheet(tasasRows);
+    wsTasas['!cols'] = [{wch: 28}, {wch: 14}, {wch: 10}, {wch: 12}];
+    XLSX.utils.book_append_sheet(wb, wsTasas, 'Tasas Proceso');
+
+    // ---- Hoja 7: Análisis por proyecto ----
+    const projMap = {};
+    data.forEach(it => {
+      if (!it.proyecto) return;
+      if (!projMap[it.proyecto]) projMap[it.proyecto] = [];
+      projMap[it.proyecto].push(it);
+    });
+    const proyKeys = Object.keys(projMap).sort();
+    const projRows = [
+      ['ANÁLISIS POR PROYECTO'],
+      [],
+      ['Proyecto', 'Cliente', 'Ítems totales', 'Activos', 'Entregados',
+       'Unidades total', 'Unidades entregadas', 'Unidades pendientes',
+       '% Cumplimiento', '% On-time', '% Avance global',
+       'Venc. aprob.', 'Venc. corte', 'Venc. cliente',
+       'Cuello de botella', 'Ítems en cuello',
+       'Próx. fecha límite', 'Brecha promedio %'],
+    ];
+    proyKeys.forEach(p => {
+      const m = computeProjectMetrics(p, projMap[p]);
+      projRows.push([
+        m.proyecto, m.cliente, m.total, m.activos, m.entregados,
+        m.totalUnd, m.undEntregadas, m.undPendientes,
+        (m.cumplimiento*100).toFixed(1) + '%',
+        (m.cumplOnTime*100).toFixed(1) + '%',
+        (m.avanceGlobal*100).toFixed(1) + '%',
+        m.vencAprob, m.vencCorte, m.vencCli,
+        m.bottleneck || '—', m.bottleneckCount,
+        m.proxFecha ? m.proxFecha.toISOString().slice(0, 10) : '—',
+        m.brechaPromedio !== null ? m.brechaPromedio.toFixed(1) + '%' : '—',
+      ]);
+    });
+    const wsProj = XLSX.utils.aoa_to_sheet(projRows);
+    wsProj['!cols'] = [{wch: 18}, {wch: 14}, {wch: 12}, {wch: 10}, {wch: 12},
+                       {wch: 14}, {wch: 14}, {wch: 14}, {wch: 14}, {wch: 12},
+                       {wch: 14}, {wch: 12}, {wch: 12}, {wch: 12},
+                       {wch: 18}, {wch: 14}, {wch: 16}, {wch: 14}];
+    XLSX.utils.book_append_sheet(wb, wsProj, 'Análisis Proyecto');
+
     // Descargar
     const filename = `Dashboard_URA_${getDateStamp()}.xlsx`;
     XLSX.writeFile(wb, filename);
@@ -2980,8 +4045,10 @@ function exportPDF() {
     const titles = {
       'ejecutiva': 'Resumen Ejecutivo',
       'ontime': 'Cumplimiento On-Time',
+      'tasas': 'Tasas por Proceso',
       'alertas': 'Alertas y Riesgos',
       'colecciones': 'Avance por Colección',
+      'proyectos': 'Análisis por Proyecto',
       'acciones': 'Planes de Acción',
       'operativa': 'Detalle Operativo',
     };
@@ -3096,6 +4163,133 @@ function exportPDF() {
         margin: { left: margin, right: margin },
       });
       y = doc.lastAutoTable.finalY + 8;
+    }
+
+    if (tab === 'tasas') {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(10, 10, 10);
+      const periodLbl = TASAS_STATE.period === 'day' ? 'día' : TASAS_STATE.period === 'week' ? 'semana' : 'mes';
+      const metricLbl = TASAS_STATE.metric === 'items' ? 'ítems' : 'unidades';
+      doc.text(`Tasas por proceso (por ${periodLbl}, ${metricLbl})`, margin, y); y += 6;
+
+      let rangeFrom2, rangeTo2;
+      if (TASAS_STATE.range === 'all') { rangeFrom2 = null; rangeTo2 = null; }
+      else if (TASAS_STATE.range === 'custom') {
+        rangeFrom2 = TASAS_STATE.customFrom ? parseDate(TASAS_STATE.customFrom) : null;
+        rangeTo2 = TASAS_STATE.customTo ? parseDate(TASAS_STATE.customTo) : null;
+      } else {
+        const r = getDefaultRangeForPeriod();
+        rangeFrom2 = r.from; rangeTo2 = r.to;
+      }
+
+      TASAS_HITOS.forEach(hito => {
+        if (y > pageH - 60) { doc.addPage(); y = margin; }
+
+        const buckets = {};
+        data.forEach(it => {
+          const dateStr = it[hito.key];
+          if (!dateStr) return;
+          const d = parseDate(dateStr);
+          if (!d) return;
+          if (rangeFrom2 && d < rangeFrom2) return;
+          if (rangeTo2 && d > rangeTo2) return;
+          const bk = getBucketKey(dateStr, TASAS_STATE.period);
+          if (!buckets[bk]) buckets[bk] = { items: 0, units: 0 };
+          buckets[bk].items += 1;
+          buckets[bk].units += (typeof it.unidades === 'number' ? it.unidades : 0);
+        });
+        const sortedKeys = Object.keys(buckets).sort();
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(10);
+        doc.setTextColor(10, 10, 10);
+        doc.text(hito.label, margin, y); y += 5;
+
+        if (sortedKeys.length === 0) {
+          doc.setFontSize(9);
+          doc.setTextColor(138, 138, 138);
+          doc.setFont('helvetica', 'italic');
+          doc.text('Sin datos en el rango seleccionado', margin + 4, y);
+          y += 8;
+          return;
+        }
+
+        const total = sortedKeys.reduce((s, k) => s + buckets[k][TASAS_STATE.metric], 0);
+        const avg = total / sortedKeys.length;
+        const max = Math.max(...sortedKeys.map(k => buckets[k][TASAS_STATE.metric]));
+
+        // Tomar últimos 12 períodos para no saturar
+        const showKeys = sortedKeys.slice(-12);
+        const tableRows = showKeys.map(k => [
+          fmtBucketLabel(k, TASAS_STATE.period),
+          fmtNum(buckets[k][TASAS_STATE.metric]),
+        ]);
+        doc.autoTable({
+          startY: y,
+          head: [['Período', metricLbl.charAt(0).toUpperCase() + metricLbl.slice(1)]],
+          body: tableRows,
+          theme: 'striped',
+          headStyles: { fillColor: [107, 95, 196], textColor: 255, fontSize: 8 },
+          bodyStyles: { fontSize: 8 },
+          margin: { left: margin, right: margin },
+          tableWidth: 80,
+        });
+        const tableEnd = doc.lastAutoTable.finalY;
+
+        // Stats al lado
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.setTextColor(74, 74, 74);
+        let sy = y + 3;
+        doc.text(`Total: ${fmtNum(total)}  ·  Promedio: ${fmtNum(Math.round(avg))}  ·  Pico: ${fmtNum(max)}`, margin + 90, sy);
+
+        y = tableEnd + 8;
+      });
+    }
+
+    if (tab === 'proyectos') {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(10, 10, 10);
+      doc.text('Análisis por proyecto', margin, y); y += 6;
+
+      const projMap = {};
+      data.forEach(it => {
+        if (!it.proyecto) return;
+        if (!projMap[it.proyecto]) projMap[it.proyecto] = [];
+        projMap[it.proyecto].push(it);
+      });
+      const proyectos = Object.keys(projMap).sort();
+      if (proyectos.length === 0) {
+        doc.setFontSize(9);
+        doc.setTextColor(138, 138, 138);
+        doc.setFont('helvetica', 'italic');
+        doc.text('Sin proyectos en el filtro actual', margin, y);
+        y += 8;
+      } else {
+        const projMetrics = proyectos.map(p => computeProjectMetrics(p, projMap[p]));
+        const tableRows = projMetrics.map(m => [
+          m.proyecto,
+          m.cliente,
+          fmtNum(m.total),
+          fmtNum(m.totalUnd),
+          fmtPct(m.cumplimiento, 0),
+          fmtPct(m.avanceGlobal, 0),
+          m.vencCli > 0 ? fmtNum(m.vencCli) : '0',
+          m.bottleneck || '—',
+        ]);
+        doc.autoTable({
+          startY: y,
+          head: [['Proyecto', 'Cliente', 'Ítems', 'Unidades', 'Cumpl.', 'Avance', 'Venc. Cli', 'Cuello botella']],
+          body: tableRows,
+          theme: 'striped',
+          headStyles: { fillColor: [107, 95, 196], textColor: 255, fontSize: 8 },
+          bodyStyles: { fontSize: 7 },
+          margin: { left: margin, right: margin },
+        });
+        y = doc.lastAutoTable.finalY + 8;
+      }
     }
 
     if (tab === 'colecciones') {
@@ -3325,6 +4519,578 @@ function generateActionsForExport(data) {
   }
   return actions;
 }
+// ============================================================
+// TASAS POR PROCESO
+// ============================================================
+const TASAS_STATE = {
+  period: 'week',     // 'day' | 'week' | 'month'
+  metric: 'items',    // 'items' | 'units'
+  range: 'default',   // 'default' (12 sem) | 'custom' | 'all'
+  customFrom: null,
+  customTo: null,
+};
+
+const TASAS_HITOS = [
+  { key: 'fecha_entrega_dllo', label: 'Entrega del desarrollo', color: '#6b5fc4' },
+  { key: 'fecha_prog_corte', label: 'Programación a corte', color: '#c98a2e' },
+  { key: 'fecha_asign_confeccion', label: 'Asignación a confección', color: '#4a8c5e' },
+  { key: 'fecha_salida_prod', label: 'Entrega a QA', color: '#2e8aa3' },
+  { key: 'fecha_cargar_pt', label: 'Entrega a cliente', color: '#b8412c' },
+];
+
+// Bucket helpers
+function getBucketKey(dateStr, period) {
+  const d = parseDate(dateStr);
+  if (!d) return null;
+  if (period === 'day') {
+    return d.toISOString().slice(0, 10);
+  } else if (period === 'week') {
+    // ISO week: Lunes como inicio de semana
+    const tmp = new Date(d);
+    const dayOfWeek = tmp.getDay() || 7;
+    tmp.setDate(tmp.getDate() - (dayOfWeek - 1));
+    return tmp.toISOString().slice(0, 10);
+  } else { // month
+    return d.toISOString().slice(0, 7) + '-01';
+  }
+}
+
+function fmtBucketLabel(bucketKey, period) {
+  if (!bucketKey) return '';
+  const d = new Date(bucketKey + 'T00:00:00');
+  if (period === 'day') {
+    return d.toLocaleDateString('es-CO', { day: '2-digit', month: 'short' });
+  } else if (period === 'week') {
+    return 'Sem ' + d.toLocaleDateString('es-CO', { day: '2-digit', month: 'short' });
+  } else {
+    return d.toLocaleDateString('es-CO', { month: 'short', year: '2-digit' }).replace('.', '');
+  }
+}
+
+function getDefaultRange() {
+  // Últimas 12 semanas
+  const to = new Date(TODAY);
+  const from = new Date(TODAY);
+  from.setDate(from.getDate() - 12 * 7);
+  return { from, to };
+}
+
+function renderTasas(data) {
+  const container = document.getElementById('tasas-charts');
+  if (!container) return;
+
+  // Determinar rango
+  let rangeFrom, rangeTo;
+  if (TASAS_STATE.range === 'all') {
+    rangeFrom = null; rangeTo = null;
+  } else if (TASAS_STATE.range === 'custom') {
+    rangeFrom = TASAS_STATE.customFrom ? parseDate(TASAS_STATE.customFrom) : null;
+    rangeTo = TASAS_STATE.customTo ? parseDate(TASAS_STATE.customTo) : null;
+  } else {
+    const r = getDefaultRange();
+    rangeFrom = r.from; rangeTo = r.to;
+  }
+
+  let html = '';
+  TASAS_HITOS.forEach(hito => {
+    // Construir buckets
+    const buckets = {}; // bucketKey -> { items: 0, units: 0 }
+    data.forEach(it => {
+      const dateStr = it[hito.key];
+      if (!dateStr) return;
+      const d = parseDate(dateStr);
+      if (!d) return;
+      if (rangeFrom && d < rangeFrom) return;
+      if (rangeTo && d > rangeTo) return;
+      const bk = getBucketKey(dateStr, TASAS_STATE.period);
+      if (!buckets[bk]) buckets[bk] = { items: 0, units: 0 };
+      buckets[bk].items += 1;
+      buckets[bk].units += (typeof it.unidades === 'number' ? it.unidades : 0);
+    });
+
+    const sortedKeys = Object.keys(buckets).sort();
+    if (sortedKeys.length === 0) {
+      html += `
+        <div class="tasas-chart-card">
+          <div class="tasas-chart-header">
+            <div class="tasas-chart-title" style="color: ${hito.color}">${hito.label}</div>
+          </div>
+          <div class="tasas-empty">Sin datos en el rango seleccionado</div>
+        </div>
+      `;
+      return;
+    }
+
+    // Stats
+    const values = sortedKeys.map(k => buckets[k][TASAS_STATE.metric]);
+    const total = values.reduce((s,v) => s+v, 0);
+    const avg = total / values.length;
+    const max = Math.max(...values);
+    const lastVal = values[values.length - 1];
+
+    // SVG chart
+    const W = 880, H = 200;
+    const padL = 50, padR = 20, padT = 18, padB = 38;
+    const chartW = W - padL - padR;
+    const chartH = H - padT - padB;
+    const n = sortedKeys.length;
+    const barGap = 2;
+    const barW = Math.max(2, (chartW / n) - barGap);
+
+    let bars = '';
+    let xLabels = '';
+    let yGrid = '';
+
+    // Y axis (4 líneas)
+    for (let i = 0; i <= 4; i++) {
+      const y = padT + (chartH / 4) * i;
+      const v = max - (max / 4) * i;
+      yGrid += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="var(--line)" stroke-dasharray="2 3"/>`;
+      yGrid += `<text x="${padL - 6}" y="${y + 3}" class="tasas-y-label" font-size="9" fill="var(--ink-muted)" text-anchor="end" font-family="Inter, sans-serif" font-feature-settings="'tnum' 1">${fmtNum(Math.round(v))}</text>`;
+    }
+
+    // Bars
+    sortedKeys.forEach((bk, i) => {
+      const v = buckets[bk][TASAS_STATE.metric];
+      const x = padL + i * (chartW / n) + barGap/2;
+      const h = max > 0 ? (v / max) * chartH : 0;
+      const y = padT + chartH - h;
+      bars += `<rect x="${x}" y="${y}" width="${barW}" height="${h}" fill="${hito.color}" opacity="0.85" rx="2">
+        <title>${fmtBucketLabel(bk, TASAS_STATE.period)}: ${fmtNum(v)} ${TASAS_STATE.metric === 'items' ? 'ítems' : 'unidades'}</title>
+      </rect>`;
+
+      // Mostrar etiquetas X de forma esparcida (cada N para que no se solapen)
+      const stride = Math.max(1, Math.ceil(n / 12));
+      if (i % stride === 0 || i === n - 1) {
+        xLabels += `<text x="${x + barW/2}" y="${H - padB + 14}" font-size="9" fill="var(--ink-muted)" text-anchor="middle" font-family="Inter, sans-serif">${fmtBucketLabel(bk, TASAS_STATE.period)}</text>`;
+      }
+
+      // Etiqueta de valor en la barra (solo si es la más alta o suficientemente alta)
+      if (v > 0 && v >= max * 0.5 && barW >= 18) {
+        bars += `<text x="${x + barW/2}" y="${y - 3}" font-size="9" fill="${hito.color}" text-anchor="middle" font-weight="700" font-family="Inter, sans-serif" font-feature-settings="'tnum' 1">${fmtNum(v)}</text>`;
+      }
+    });
+
+    // Línea de tendencia (promedio móvil simple si hay >=4 puntos)
+    let trendLine = '';
+    if (n >= 4) {
+      const window = Math.min(3, Math.max(2, Math.floor(n/8)));
+      const smoothed = values.map((_, idx) => {
+        const start = Math.max(0, idx - Math.floor(window/2));
+        const end = Math.min(n, idx + Math.ceil(window/2));
+        const slice = values.slice(start, end);
+        return slice.reduce((s,v) => s+v, 0) / slice.length;
+      });
+      const points = smoothed.map((v, i) => {
+        const x = padL + i * (chartW / n) + (chartW/n)/2;
+        const y = padT + chartH - (max > 0 ? (v / max) * chartH : 0);
+        return `${x},${y}`;
+      }).join(' ');
+      trendLine = `<polyline points="${points}" fill="none" stroke="${hito.color}" stroke-width="2" opacity="0.4"/>`;
+    }
+
+    html += `
+      <div class="tasas-chart-card">
+        <div class="tasas-chart-header">
+          <div class="tasas-chart-title" style="color: ${hito.color}">${hito.label}</div>
+          <div class="tasas-chart-stats">
+            <div class="tasas-chart-stat">Total: <strong>${fmtNum(total)}</strong></div>
+            <div class="tasas-chart-stat">Promedio por ${TASAS_STATE.period === 'day' ? 'día' : TASAS_STATE.period === 'week' ? 'semana' : 'mes'}: <strong>${fmtNum(Math.round(avg))}</strong></div>
+            <div class="tasas-chart-stat">Pico: <strong>${fmtNum(max)}</strong></div>
+            <div class="tasas-chart-stat">Último período: <strong>${fmtNum(lastVal)}</strong></div>
+          </div>
+        </div>
+        <svg class="tasas-chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">
+          ${yGrid}
+          ${bars}
+          ${trendLine}
+          ${xLabels}
+        </svg>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+// Listeners de los controles de tasas
+function setupTasasControls() {
+  document.querySelectorAll('[data-tasas-period]').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('[data-tasas-period]').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      TASAS_STATE.period = b.dataset.tasasPeriod;
+      // Ajustar el label del rango por defecto
+      const def = document.querySelector('[data-tasas-range="default"]');
+      if (def) {
+        if (TASAS_STATE.period === 'day') def.textContent = 'Últimos 30 días';
+        else if (TASAS_STATE.period === 'month') def.textContent = 'Últimos 6 meses';
+        else def.textContent = 'Últimas 12 sem.';
+      }
+      renderTasas(applyFilters());
+    });
+  });
+  document.querySelectorAll('[data-tasas-metric]').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('[data-tasas-metric]').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      TASAS_STATE.metric = b.dataset.tasasMetric;
+      renderTasas(applyFilters());
+    });
+  });
+  document.querySelectorAll('[data-tasas-range]').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('[data-tasas-range]').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      TASAS_STATE.range = b.dataset.tasasRange;
+      const customGroup = document.querySelector('.tasas-custom-range');
+      if (customGroup) {
+        if (TASAS_STATE.range === 'custom') customGroup.classList.remove('hidden');
+        else customGroup.classList.add('hidden');
+      }
+      renderTasas(applyFilters());
+    });
+  });
+  const dateFrom = document.getElementById('tasas-date-from');
+  const dateTo = document.getElementById('tasas-date-to');
+  if (dateFrom) dateFrom.addEventListener('change', e => {
+    TASAS_STATE.customFrom = e.target.value;
+    renderTasas(applyFilters());
+  });
+  if (dateTo) dateTo.addEventListener('change', e => {
+    TASAS_STATE.customTo = e.target.value;
+    renderTasas(applyFilters());
+  });
+}
+
+// Override default range según el period
+function getDefaultRangeForPeriod() {
+  const to = new Date(TODAY);
+  const from = new Date(TODAY);
+  if (TASAS_STATE.period === 'day') {
+    from.setDate(from.getDate() - 30);
+  } else if (TASAS_STATE.period === 'month') {
+    from.setMonth(from.getMonth() - 6);
+  } else {
+    from.setDate(from.getDate() - 12 * 7);
+  }
+  return { from, to };
+}
+
+// ============================================================
+// ANÁLISIS POR PROYECTO
+// ============================================================
+const PROJECT_STATE = {
+  expanded: null,  // qué proyecto está expandido
+};
+
+function renderProyectos(data) {
+  const container = document.getElementById('projects-cards-grid');
+  if (!container) return;
+
+  // Agrupar por proyecto
+  const projMap = {};
+  data.forEach(it => {
+    if (!it.proyecto) return;
+    if (!projMap[it.proyecto]) projMap[it.proyecto] = [];
+    projMap[it.proyecto].push(it);
+  });
+  const proyectos = Object.keys(projMap).sort();
+
+  if (proyectos.length === 0) {
+    container.innerHTML = '<div class="empty">Sin proyectos en el filtro actual</div>';
+    document.getElementById('projects-comparisons').style.display = 'none';
+    return;
+  }
+  document.getElementById('projects-comparisons').style.display = '';
+
+  // Computar métricas por proyecto
+  const projMetrics = proyectos.map(p => computeProjectMetrics(p, projMap[p]));
+
+  // Render tarjetas
+  container.innerHTML = projMetrics.map(m => renderProjectCard(m)).join('');
+
+  // Bind clicks
+  container.querySelectorAll('.project-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      // No expandir si se hizo click en el botón de cerrar
+      if (e.target.closest('.project-card-close')) return;
+      const proj = card.dataset.proyecto;
+      if (PROJECT_STATE.expanded === proj) {
+        PROJECT_STATE.expanded = null;
+      } else {
+        PROJECT_STATE.expanded = proj;
+      }
+      renderProyectos(data);
+    });
+  });
+
+  // Comparativos
+  renderProyectosComparativos(projMetrics);
+}
+
+function computeProjectMetrics(proyecto, items) {
+  const total = items.length;
+  const activos = items.filter(i => i.estado === 'ACTIVO');
+  const entregados = items.filter(i => i.estado === 'ENTREGADO');
+  const totalUnd = sumUnidades(items);
+  const undEntregadas = sumUnidades(entregados);
+  const undPendientes = totalUnd - undEntregadas;
+
+  // % cumplimiento (entregas a tiempo / total con resultado)
+  const ptATiempo = items.filter(i => i.cumpl_pt === 'Entregado a tiempo').length;
+  const ptTarde = items.filter(i => i.cumpl_pt === 'Entregado tarde').length;
+  const ptSinEnt = items.filter(i => i.cumpl_pt === 'Sin entregar').length;
+  const ptDeterminados = ptATiempo + ptTarde;
+  const cumplimiento = total > 0 ? ((ptATiempo + ptTarde) / total) : 0;
+  const cumplOnTime = ptDeterminados > 0 ? (ptATiempo / ptDeterminados) : 0;
+
+  // % Avance global = promedio de etapas completadas (entrega cliente OK)
+  const avanceGlobal = total > 0 ? (items.filter(i => i.estado_cliente === 'OK').length / total) : 0;
+
+  // # por categoría
+  const porCategoria = {};
+  items.forEach(i => {
+    const k = i.categoria || 'Sin categoría';
+    porCategoria[k] = (porCategoria[k] || 0) + 1;
+  });
+
+  // # por género
+  const porGenero = {};
+  items.forEach(i => {
+    const k = i.genero || 'Sin género';
+    porGenero[k] = (porGenero[k] || 0) + 1;
+  });
+
+  // Vencidos (en activos)
+  const vencAprob = activos.filter(isVencidoAprob).length;
+  const vencCorte = activos.filter(isVencidoProgCorte).length;
+  const vencCli = activos.filter(isVencidoCliente).length;
+  const vencTotal = vencAprob + vencCorte + vencCli;
+
+  // Cuello de botella
+  const procCounts = {};
+  activos.forEach(i => {
+    const k = i.proceso;
+    if (!k || k === 'Despachado al CEDI') return;
+    procCounts[k] = (procCounts[k] || 0) + 1;
+  });
+  let bottleneck = null;
+  let maxProc = 0;
+  Object.entries(procCounts).forEach(([k, n]) => {
+    if (n > maxProc) { maxProc = n; bottleneck = k; }
+  });
+
+  // Fecha límite más próxima
+  const fechasLim = activos.map(i => parseDate(i.fecha_limite_pt_cliente)).filter(d => d && d >= TODAY);
+  fechasLim.sort((a,b) => a - b);
+  const proxFecha = fechasLim[0] || null;
+
+  // Cliente principal
+  const clienteSet = new Set(items.map(i => i.cliente).filter(Boolean));
+  const cliente = clienteSet.size === 1 ? [...clienteSet][0] : `${clienteSet.size} clientes`;
+
+  // Brecha vs ideal del cronograma (promedio de las brechas en colecciones del proyecto)
+  const cols = new Set(items.map(i => i.coleccion).filter(Boolean));
+  let brechas = [];
+  cols.forEach(col => {
+    const cron = CRONO[col];
+    if (!cron) return;
+    const itemsCol = items.filter(i => i.coleccion === col);
+    ETAPAS_MATRIX.forEach(e => {
+      const totalE = itemsCol.length;
+      const okE = itemsCol.filter(i => i[e.key] === 'OK').length;
+      const real = totalE > 0 ? okE/totalE : 0;
+      const ideal = cron[e.ideal_key];
+      if (ideal == null) return;
+      brechas.push((ideal - real) * 100);
+    });
+  });
+  const brechaPromedio = brechas.length > 0 ? (brechas.reduce((s,v) => s+v, 0) / brechas.length) : null;
+
+  return {
+    proyecto, cliente,
+    total, activos: activos.length, entregados: entregados.length,
+    totalUnd, undEntregadas, undPendientes,
+    cumplimiento, cumplOnTime,
+    avanceGlobal,
+    porCategoria, porGenero,
+    vencAprob, vencCorte, vencCli, vencTotal,
+    bottleneck, bottleneckCount: maxProc,
+    proxFecha,
+    brechaPromedio,
+    items,
+  };
+}
+
+function renderProjectCard(m) {
+  const isExpanded = PROJECT_STATE.expanded === m.proyecto;
+  const avancePct = m.avanceGlobal * 100;
+  const avanceCls = avancePct >= 80 ? 'ok' : avancePct >= 50 ? 'accent' : avancePct >= 30 ? 'warn' : 'crit';
+
+  const tags = [];
+  if (m.vencCli > 0) tags.push(`<span class="project-tag crit">${m.vencCli} venc. cliente</span>`);
+  if (m.vencAprob > 0) tags.push(`<span class="project-tag crit">${m.vencAprob} venc. aprob</span>`);
+  if (m.vencCorte > 0) tags.push(`<span class="project-tag crit">${m.vencCorte} venc. corte</span>`);
+  if (m.bottleneck) tags.push(`<span class="project-tag warn">⚙ ${m.bottleneck}: ${m.bottleneckCount}</span>`);
+  if (m.brechaPromedio !== null && m.brechaPromedio > 25) tags.push(`<span class="project-tag crit">Brecha ${m.brechaPromedio.toFixed(0)}%</span>`);
+  else if (m.brechaPromedio !== null && m.brechaPromedio > 15) tags.push(`<span class="project-tag warn">Brecha ${m.brechaPromedio.toFixed(0)}%</span>`);
+  if (m.proxFecha) {
+    const days = daysBetween(m.proxFecha, TODAY);
+    if (days <= 7) tags.push(`<span class="project-tag crit">Vence en ${days}d</span>`);
+    else if (days <= 30) tags.push(`<span class="project-tag warn">Vence en ${days}d</span>`);
+  }
+  if (tags.length === 0 && m.activos > 0) tags.push(`<span class="project-tag ok">Al día</span>`);
+
+  let detail = '';
+  if (isExpanded) {
+    const catEntries = Object.entries(m.porCategoria).sort((a,b) => b[1] - a[1]);
+    const genEntries = Object.entries(m.porGenero).sort((a,b) => b[1] - a[1]);
+    detail = `
+      <div class="project-detail">
+        <div class="project-detail-grid">
+          <div class="project-detail-block">
+            <h4>Por categoría</h4>
+            <ul class="project-detail-list">
+              ${catEntries.map(([k, n]) => `<li><span>${escapeHtml(k)}</span><strong>${fmtNum(n)}</strong></li>`).join('')}
+            </ul>
+          </div>
+          <div class="project-detail-block">
+            <h4>Por género</h4>
+            <ul class="project-detail-list">
+              ${genEntries.map(([k, n]) => `<li><span>${escapeHtml(k)}</span><strong>${fmtNum(n)}</strong></li>`).join('')}
+            </ul>
+          </div>
+          <div class="project-detail-block">
+            <h4>Cumplimiento detallado</h4>
+            <ul class="project-detail-list">
+              <li><span>% Cumplimiento (entregados/total)</span><strong>${fmtPct(m.cumplimiento, 0)}</strong></li>
+              <li><span>% On-time (a tiempo/entregados)</span><strong>${fmtPct(m.cumplOnTime, 0)}</strong></li>
+              <li><span>% Avance global</span><strong>${fmtPct(m.avanceGlobal, 0)}</strong></li>
+              ${m.brechaPromedio !== null ? `<li><span>Brecha vs ideal</span><strong>${m.brechaPromedio > 0 ? '−' : '+'}${Math.abs(m.brechaPromedio).toFixed(0)}%</strong></li>` : ''}
+            </ul>
+          </div>
+          <div class="project-detail-block">
+            <h4>Unidades</h4>
+            <ul class="project-detail-list">
+              <li><span>Total</span><strong>${fmtNum(m.totalUnd)}</strong></li>
+              <li><span>Entregadas</span><strong>${fmtNum(m.undEntregadas)}</strong></li>
+              <li><span>Pendientes</span><strong>${fmtNum(m.undPendientes)}</strong></li>
+            </ul>
+          </div>
+          <div class="project-detail-block">
+            <h4>Riesgos</h4>
+            <ul class="project-detail-list">
+              <li><span>Vencidos aprobación</span><strong>${fmtNum(m.vencAprob)}</strong></li>
+              <li><span>Vencidos prog. corte</span><strong>${fmtNum(m.vencCorte)}</strong></li>
+              <li><span>Vencidos entrega cliente</span><strong>${fmtNum(m.vencCli)}</strong></li>
+              ${m.bottleneck ? `<li><span>Cuello de botella</span><strong>${escapeHtml(m.bottleneck)} (${m.bottleneckCount})</strong></li>` : ''}
+              ${m.proxFecha ? `<li><span>Fecha más próxima</span><strong>${m.proxFecha.toLocaleDateString('es-CO', {day:'2-digit', month:'2-digit', year:'2-digit'})}</strong></li>` : ''}
+            </ul>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="project-card ${isExpanded ? 'expanded' : ''}" data-proyecto="${escapeHtml(m.proyecto)}">
+      ${isExpanded ? '<button class="project-card-close" title="Cerrar">×</button>' : ''}
+      <div class="project-card-header">
+        <div class="project-card-title">
+          <div class="project-card-name">${escapeHtml(m.proyecto)}</div>
+          <div class="project-card-cliente">${escapeHtml(m.cliente)}</div>
+        </div>
+        <div class="project-card-status">
+          <div class="project-card-progress-num" style="color: var(--${avanceCls === 'accent' ? 'accent-deep' : avanceCls})">${avancePct.toFixed(0)}%</div>
+          <div class="project-card-progress-label">Avance</div>
+        </div>
+      </div>
+      <div class="project-card-progress-bar">
+        <div class="project-card-progress-fill ${avanceCls}" style="width: ${avancePct}%"></div>
+      </div>
+      <div class="project-card-mini-stats">
+        <div class="project-mini-stat">
+          <div class="project-mini-stat-value">${fmtNum(m.total)}</div>
+          <div class="project-mini-stat-label">Ítems</div>
+        </div>
+        <div class="project-mini-stat">
+          <div class="project-mini-stat-value">${fmtNum(m.totalUnd)}</div>
+          <div class="project-mini-stat-label">Unidades</div>
+        </div>
+        <div class="project-mini-stat">
+          <div class="project-mini-stat-value">${fmtPct(m.cumplimiento, 0)}</div>
+          <div class="project-mini-stat-label">Cumplim.</div>
+        </div>
+      </div>
+      ${tags.length > 0 ? `<div class="project-card-tags">${tags.join('')}</div>` : ''}
+      ${detail}
+    </div>
+  `;
+}
+
+function renderProyectosComparativos(projMetrics) {
+  // Top 8 proyectos por volumen (para que las gráficas sean legibles)
+  const top = [...projMetrics].sort((a,b) => b.total - a.total).slice(0, 10);
+
+  // 1) % Cumplimiento por proyecto
+  const cumplData = [...top].sort((a,b) => b.cumplimiento - a.cumplimiento);
+  const maxCumpl = 1;
+  document.getElementById('proj-cumpl-chart').innerHTML = cumplData.map(m => {
+    const pct = m.cumplimiento * 100;
+    const cls = pct >= 80 ? 'ok' : pct >= 60 ? 'accent' : pct >= 40 ? 'warn' : 'crit';
+    return `
+      <div class="proj-bar-row">
+        <div class="proj-bar-label" title="${escapeHtml(m.proyecto)}">${escapeHtml(m.proyecto)}</div>
+        <div class="proj-bar-track"><div class="proj-bar-fill ${cls}" style="width:${pct}%">${pct >= 12 ? pct.toFixed(0) + '%' : ''}</div></div>
+        <div class="proj-bar-value">${pct.toFixed(0)}%</div>
+      </div>
+    `;
+  }).join('') || '<div class="empty">Sin datos</div>';
+
+  // 2) Vencidos por proyecto
+  const vencData = [...top].sort((a,b) => b.vencTotal - a.vencTotal).slice(0, 10);
+  const maxVenc = Math.max(1, ...vencData.map(m => m.vencTotal));
+  document.getElementById('proj-vencidos-chart').innerHTML = vencData.map(m => {
+    const pct = (m.vencTotal / maxVenc) * 100;
+    return `
+      <div class="proj-bar-row">
+        <div class="proj-bar-label" title="${escapeHtml(m.proyecto)}">${escapeHtml(m.proyecto)}</div>
+        <div class="proj-bar-track"><div class="proj-bar-fill crit" style="width:${pct}%">${m.vencTotal > 0 && pct >= 12 ? m.vencTotal : ''}</div></div>
+        <div class="proj-bar-value">${m.vencTotal}</div>
+      </div>
+    `;
+  }).join('') || '<div class="empty">Sin datos</div>';
+
+  // 3) % Avance por proyecto
+  const avanceData = [...top].sort((a,b) => b.avanceGlobal - a.avanceGlobal);
+  document.getElementById('proj-avance-chart').innerHTML = avanceData.map(m => {
+    const pct = m.avanceGlobal * 100;
+    const cls = pct >= 80 ? 'ok' : pct >= 50 ? 'accent' : pct >= 30 ? 'warn' : 'crit';
+    return `
+      <div class="proj-bar-row">
+        <div class="proj-bar-label" title="${escapeHtml(m.proyecto)}">${escapeHtml(m.proyecto)}</div>
+        <div class="proj-bar-track"><div class="proj-bar-fill ${cls}" style="width:${pct}%">${pct >= 12 ? pct.toFixed(0) + '%' : ''}</div></div>
+        <div class="proj-bar-value">${pct.toFixed(0)}%</div>
+      </div>
+    `;
+  }).join('') || '<div class="empty">Sin datos</div>';
+
+  // 4) Volumen por proyecto
+  const volData = [...top].sort((a,b) => b.total - a.total);
+  const maxTot = Math.max(1, ...volData.map(m => m.total));
+  document.getElementById('proj-volumen-chart').innerHTML = volData.map(m => {
+    const pct = (m.total / maxTot) * 100;
+    return `
+      <div class="proj-bar-row">
+        <div class="proj-bar-label" title="${escapeHtml(m.proyecto)}">${escapeHtml(m.proyecto)}</div>
+        <div class="proj-bar-track"><div class="proj-bar-fill accent" style="width:${pct}%">${pct >= 12 ? fmtNum(m.total) : ''}</div></div>
+        <div class="proj-bar-value">${fmtNum(m.total)}</div>
+      </div>
+    `;
+  }).join('') || '<div class="empty">Sin datos</div>';
+}
+
 function render() {
   updateHasValueClasses();
   renderActiveChips();
@@ -3333,10 +5099,17 @@ function render() {
   renderExecKPIs(data);
   renderPipeline(data);
   renderOnTime(data);
+  renderTasas(data);
+  renderProyectos(data);
   renderAlerts(data);
   renderMatrix(data);
   renderActionPlans(data);
   renderTable(data);
+}
+
+// Inicialización post-load: setup de los controles de tasas
+function postLoadInit() {
+  setupTasasControls();
 }
 
 loadData();
